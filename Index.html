@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Daftar Hadir PSAS - SMP Negeri 3 Blanakan</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- HTML5 QR Code Scanner -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <!-- QR Code Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- jsPDF & AutoTable untuk Ekspor PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      min-height: 100vh;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    /* Animasi Kartu & Menu */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .menu-btn {
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .menu-btn:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 18px 30px -10px rgba(79, 70, 229, 0.45);
+    }
+    .menu-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Animasi Fade In */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-enter {
+      animation: fadeSlideUp 0.45s ease-out forwards;
+    }
+
+    /* Marquee Text Berjalan di Bawah */
+    .marquee-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(90deg, #4f46e5, #ec4899, #f59e0b);
+      color: white;
+      padding: 8px 0;
+      z-index: 50;
+      overflow: hidden;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    }
+    .marquee-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      animation: marqueeAnim 22s linear infinite;
+    }
+    @keyframes marqueeAnim {
+      0% { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Styling Scanner */
+    #reader video {
+      border-radius: 1rem !important;
+      object-fit: cover !important;
+    }
+  </style>
+</head>
+<body class="pb-14">
+
+  <!-- ==================== 1. HALAMAN LOGIN ==================== -->
+  <div id="view-login" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass-card rounded-3xl w-full max-w-md p-8 animate-enter relative overflow-hidden">
+      <!-- Dekorasi Warna -->
+      <div class="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-pink-500 to-indigo-600 rounded-full opacity-20 blur-xl"></div>
+      <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-gradient-to-tr from-amber-400 to-emerald-500 rounded-full opacity-20 blur-xl"></div>
+
+      <div class="text-center relative z-10">
+        <div class="w-24 h-24 mx-auto mb-4 rounded-2xl bg-white p-2 shadow-lg flex items-center justify-center border border-indigo-100">
+          <img id="school-logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg" alt="Logo Sekolah" class="max-h-full max-w-full object-contain">
+        </div>
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 mb-2">
+          SISTEM DIGITAL UJIAN
+        </span>
+        <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">SMP Negeri 3 Blanakan</h1>
+        <p class="text-sm font-medium text-indigo-600 mt-1">Daftar Hadir Peserta Penilaian Sumatif Akhir Semester</p>
+      </div>
+
+      <form id="form-login" class="mt-7 space-y-4 relative z-10">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Username / Kode Pengawas</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-indigo-500">
+              <i class="fa-solid fa-user-tie"></i>
+            </span>
+            <input type="text" id="login-username" required placeholder="Masukkan Kode Pengawas"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 outline-none transition font-medium text-slate-700">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-pink-500">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="login-password" required placeholder="Masukkan Password"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/15 outline-none transition font-medium text-slate-700">
+          </div>
+        </div>
+
+        <button type="submit" id="btn-login"
+          class="w-full py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 flex items-center justify-center gap-2">
+          <span>MASUK APLIKASI</span>
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== 2. MENU UTAMA (DASHBOARD) ==================== -->
+  <div id="view-dashboard" class="hidden min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
+    <!-- Header Profil Pengawas -->
+    <div class="glass-card rounded-3xl p-6 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-enter">
+      <div class="flex items-center gap-4">
+        <img id="dash-logo" src="" class="w-14 h-14 object-contain bg-white rounded-xl p-1.5 shadow">
+        <div>
+          <h2 class="text-lg font-extrabold text-slate-800">SMP Negeri 3 Blanakan</h2>
+          <p class="text-xs font-semibold text-indigo-600" id="user-greeting">Selamat Datang, Pengawas</p>
+          <p class="text-xs text-slate-500" id="user-nip">NIP. - | Jabatan: -</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <!-- Tombol Pengaturan Logo Khusus Admin -->
+        <button id="btn-admin-logo" onclick="openLogoModal()" class="hidden px-4 py-2.5 rounded-xl bg-amber-100 text-amber-700 hover:bg-amber-200 font-bold text-xs flex items-center gap-2 transition">
+          <i class="fa-solid fa-image"></i> Ubah Logo
+        </button>
+        <!-- Tombol Generator QR Code -->
+        <button onclick="navigateTo('view-qr-gen')" class="px-4 py-2.5 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-200 font-bold text-xs flex items-center gap-2 transition">
+          <i class="fa-solid fa-qrcode"></i> Cetak QR Peserta
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid Menu Utama -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-enter">
+      <!-- Menu 1: Berita Acara dan Kehadiran -->
+      <button onclick="navigateTo('view-form-ba')" class="menu-btn glass-card rounded-3xl p-7 text-left relative overflow-hidden group border-b-4 border-indigo-500">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/30 mb-5 group-hover:rotate-6 transition">
+          <i class="fa-solid fa-camera-retro"></i>
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1">BERITA ACARA DAN KEHADIRAN</h3>
+        <p class="text-sm text-slate-500">Input sesi ruang ujian & pindai QR Code kehadiran peserta secara langsung.</p>
+        <div class="mt-4 inline-flex items-center text-xs font-bold text-indigo-600 gap-1">
+          Mulai Sesi Ujian <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </button>
+
+      <!-- Menu 2: Rekap Kehadiran dan Hasil Berita Acara -->
+      <button onclick="openRekapMenu()" class="menu-btn glass-card rounded-3xl p-7 text-left relative overflow-hidden group border-b-4 border-pink-500">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-pink-500/30 mb-5 group-hover:rotate-6 transition">
+          <i class="fa-solid fa-file-pdf"></i>
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1">REKAP KEHADIRAN & BERITA ACARA</h3>
+        <p class="text-sm text-slate-500">Filter laporan kehadiran, cetak otomatis draft Berita Acara & unduh PDF.</p>
+        <div class="mt-4 inline-flex items-center text-xs font-bold text-pink-600 gap-1">
+          Lihat Laporan <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </button>
+    </div>
+
+    <!-- Tombol Keluar -->
+    <div class="mt-8 text-center animate-enter">
+      <button onclick="logout()" class="px-8 py-3.5 rounded-2xl bg-red-500/90 hover:bg-red-600 text-white font-bold shadow-lg shadow-red-500/30 transition transform active:scale-95 inline-flex items-center gap-2">
+        <i class="fa-solid fa-power-off"></i> KELUAR APLIKASI
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 3. FORM BERITA ACARA & KEHADIRAN ==================== -->
+  <div id="view-form-ba" class="hidden min-h-screen p-4 md:p-8 max-w-2xl mx-auto">
+    <div class="glass-card rounded-3xl p-6 md:p-8 animate-enter">
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-800">Setup Sesi Ujian</h2>
+          <p class="text-xs text-slate-500">Lengkapi data sebelum memindai QR Code peserta</p>
+        </div>
+        <button onclick="navigateTo('view-dashboard')" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-sesi" class="space-y-4">
+        <!-- a) Ruang Peserta 01 - 17 -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Ruang Peserta</label>
+          <select id="input-ruang" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 focus:border-indigo-500 outline-none">
+            <option value="">-- Pilih Ruang Ujian --</option>
+          </select>
+        </div>
+
+        <!-- b) Tanggal Pelaksanaan -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tanggal Pelaksanaan</label>
+          <input type="date" id="input-tanggal" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 focus:border-indigo-500 outline-none">
+        </div>
+
+        <!-- c) Waktu Pelaksanaan (Format 24 Jam) -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Jam Mulai (24 Jam)</label>
+            <input type="time" id="input-jam-mulai" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 focus:border-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Jam Berakhir (24 Jam)</label>
+            <input type="time" id="input-jam-selesai" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 focus:border-indigo-500 outline-none">
+          </div>
+        </div>
+
+        <!-- d) Mata Pelajaran -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Mata Pelajaran</label>
+          <select id="input-mapel" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 focus:border-indigo-500 outline-none">
+            <option value="">-- Pilih Mata Pelajaran --</option>
+            <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+            <option value="Informatika">Informatika</option>
+            <option value="Pendidikan Jasmani, Olahraga dan Kesehatan">Pendidikan Jasmani, Olahraga dan Kesehatan</option>
+            <option value="Ilmu Pengetahuan Alam">Ilmu Pengetahuan Alam</option>
+            <option value="Prakarya">Prakarya</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Pendidikan Kewaraganegaraan">Pendidikan Kewaraganegaraan</option>
+            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+            <option value="Ilmu Pengetahuan Sosial">Ilmu Pengetahuan Sosial</option>
+            <option value="Bahasa Sunda">Bahasa Sunda</option>
+            <option value="Bahasa Inggris">Bahasa Inggris</option>
+          </select>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="button" onclick="navigateTo('view-dashboard')" class="w-1/3 py-3.5 rounded-xl font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
+            Kembali
+          </button>
+          <button type="submit" class="w-2/3 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-qrcode"></i> Submit & Pindai QR
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== 4. KAMERA SCANNER QR & HASIL PINDAI ==================== -->
+  <div id="view-scanner" class="hidden min-h-screen p-4 md:p-8 max-w-xl mx-auto">
+    <div class="glass-card rounded-3xl p-6 animate-enter">
+      <div class="text-center mb-4">
+        <span id="badge-sesi" class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 mb-1">
+          Ruang 01 | Matematika
+        </span>
+        <h2 class="text-lg font-extrabold text-slate-800">Pindai QR Code Peserta</h2>
+        <p class="text-xs text-slate-500">Arahkan kamera HP ke kartu QR Code peserta ujian</p>
+      </div>
+
+      <!-- Area Kamera -->
+      <div id="scanner-box" class="relative rounded-2xl overflow-hidden bg-slate-900 border-4 border-indigo-500/30 shadow-inner">
+        <div id="reader" class="w-full"></div>
+      </div>
+
+      <!-- Area Hasil Pindai (Muncul setelah scan berhasil) -->
+      <div id="scan-result-card" class="hidden mt-4 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-400 rounded-2xl p-5 animate-enter">
+        <div class="flex items-center gap-3 mb-3 pb-3 border-b border-emerald-200">
+          <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center text-lg">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-emerald-900 text-sm">DATA PESERTA TERVERIFIKASI</h4>
+            <p class="text-xs text-emerald-700" id="res-waktu">Tercatat pada: -</p>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-slate-500">Nomor Peserta:</span><span class="font-bold text-slate-800" id="res-nopes">-</span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Nama Lengkap:</span><span class="font-bold text-slate-800" id="res-nama">-</span></div>
+          <div class="flex justify-between"><span class="text-slate-500">NIS / NISN:</span><span class="font-bold text-slate-800" id="res-nis">-</span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Kelas:</span><span class="font-bold text-slate-800" id="res-kelas">-</span></div>
+          <div class="flex justify-between"><span class="text-slate-500">Ruang:</span><span class="font-bold text-indigo-700" id="res-ruang">-</span></div>
+        </div>
+
+        <!-- Tombol OK (Lanjut Scan) dan Kembali (Menu Utama) -->
+        <div class="mt-5 grid grid-cols-2 gap-3">
+          <button onclick="resumeScanner()" class="py-3 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> OK (Scan Lagi)
+          </button>
+          <button onclick="stopAndGoHome()" class="py-3 rounded-xl font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 transition">
+            <i class="fa-solid fa-house mr-1"></i> Kembali
+          </button>
+        </div>
+      </div>
+
+      <div id="scanner-footer-btn" class="mt-5 text-center">
+        <button onclick="stopAndGoHome()" class="px-6 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+          Kembali ke Menu Utama
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 5. REKAP KEHADIRAN & HASIL BERITA ACARA ==================== -->
+  <div id="view-rekap" class="hidden min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
+    <div class="glass-card rounded-3xl p-6 md:p-8 animate-enter">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-800">Rekap Kehadiran & Berita Acara</h2>
+          <p class="text-xs text-slate-500">Filter laporan dan unduh dokumen PDF resmi</p>
+        </div>
+        <button onclick="navigateTo('view-dashboard')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 font-bold text-xs text-slate-700">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Menu Utama
+        </button>
+      </div>
+
+      <!-- Tab Navigasi -->
+      <div class="flex gap-2 mb-6 bg-slate-100 p-1.5 rounded-2xl">
+        <button id="tab-btn-kehadiran" onclick="switchRekapTab('kehadiran')" class="flex-1 py-2.5 rounded-xl font-bold text-sm bg-indigo-600 text-white shadow transition">
+          1. Rekap & Laporan Kehadiran
+        </button>
+        <button id="tab-btn-ba" onclick="switchRekapTab('ba')" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:text-slate-900 transition">
+          2. Lembar Berita Acara Otomatis
+        </button>
+      </div>
+
+      <!-- Filter Global -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-6 bg-indigo-50/70 p-4 rounded-2xl border border-indigo-100">
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-indigo-800 mb-1">Mata Pelajaran</label>
+          <select id="filter-mapel" onchange="applyFilters()" class="w-full p-2.5 rounded-xl border border-indigo-200 text-xs font-semibold bg-white">
+            <option value="">Semua Mata Pelajaran</option>
+            <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+            <option value="Informatika">Informatika</option>
+            <option value="Pendidikan Jasmani, Olahraga dan Kesehatan">Pendidikan Jasmani, Olahraga dan Kesehatan</option>
+            <option value="Ilmu Pengetahuan Alam">Ilmu Pengetahuan Alam</option>
+            <option value="Prakarya">Prakarya</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Pendidikan Kewaraganegaraan">Pendidikan Kewaraganegaraan</option>
+            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+            <option value="Ilmu Pengetahuan Sosial">Ilmu Pengetahuan Sosial</option>
+            <option value="Bahasa Sunda">Bahasa Sunda</option>
+            <option value="Bahasa Inggris">Bahasa Inggris</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-indigo-800 mb-1">Tanggal Ujian</label>
+          <input type="date" id="filter-tanggal" onchange="applyFilters()" class="w-full p-2.5 rounded-xl border border-indigo-200 text-xs font-semibold bg-white">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-indigo-800 mb-1">Ruang Ujian</label>
+          <select id="filter-ruang" onchange="applyFilters()" class="w-full p-2.5 rounded-xl border border-indigo-200 text-xs font-semibold bg-white">
+            <option value="">Semua Ruang</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-indigo-800 mb-1">Cari Nama Peserta</label>
+          <input type="text" id="filter-nama" onkeyup="applyFilters()" placeholder="Ketik nama..." class="w-full p-2.5 rounded-xl border border-indigo-200 text-xs font-semibold bg-white">
+        </div>
+      </div>
+
+      <!-- TAB 1: TABEL REKAP KEHADIRAN -->
+      <div id="content-tab-kehadiran">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-xs font-bold text-slate-600" id="count-rekap">Menampilkan 0 data</span>
+          <button onclick="exportKehadiranPDF()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i> Unduh PDF Daftar Hadir
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-800 text-white">
+                <th class="p-3">No</th>
+                <th class="p-3">Waktu Scan</th>
+                <th class="p-3">No. Peserta</th>
+                <th class="p-3">Nama Peserta</th>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Ruang</th>
+                <th class="p-3">Mata Pelajaran</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rekap" class="divide-y divide-slate-100 bg-white"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: DRAFT BERITA ACARA OTOMATIS -->
+      <div id="content-tab-ba" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <p class="text-xs text-amber-700 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+            <i class="fa-solid fa-circle-info mr-1"></i> Pilih filter <b>Mata Pelajaran</b>, <b>Tanggal</b>, dan <b>Ruang</b> di atas agar Berita Acara terisi akurat.
+          </p>
+          <button onclick="exportBeritaAcaraPDF()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> Unduh PDF Berita Acara
+          </button>
+        </div>
+
+        <!-- Preview Kertas Berita Acara -->
+        <div id="ba-preview-box" class="bg-white border border-slate-300 p-8 md:p-12 rounded-xl shadow-inner max-w-3xl mx-auto text-slate-900 font-serif leading-relaxed text-sm">
+          <div class="text-center font-bold border-b-2 border-black pb-3 mb-6">
+            <h3 class="text-base">BERITA ACARA</h3>
+            <h3 class="text-base">PELAKSANAAN PENILAIAN SUMATIF AKHIR SEMESTER</h3>
+            <h3 class="text-base">SMP NEGERI 3 BLANAKAN</h3>
+            <h3 class="text-base">TAHUN AJARAN 2026/2027</h3>
+          </div>
+
+          <p class="text-justify mb-4" id="ba-paragraf-pembuka">
+            Pada hari ini ......................... tanggal ..... bulan ......................... Tahun Dua Ribu Dua Puluh Enam, Pukul .......... s.d. .......... bertempat di SMP Negeri 3 Blanakan, telah dilaksanakan Kegiatan Penilaian Sumatif Akhir Semester Tahun Ajaran 2026/2027 Mata Pelajaran ........................................, dengan rincian sebagai berikut:
+          </p>
+
+          <table class="w-full mb-4 text-sm">
+            <tr>
+              <td class="w-56 py-1">Ruang</td>
+              <td class="w-4">:</td>
+              <td class="font-bold" id="ba-ruang">-</td>
+            </tr>
+            <tr>
+              <td class="py-1">Jumlah Peserta Yang hadir</td>
+              <td>:</td>
+              <td class="font-bold" id="ba-hadir">0 orang</td>
+            </tr>
+            <tr>
+              <td class="py-1 align-top">Peserta Yang Tidak Hadir</td>
+              <td class="align-top">:</td>
+              <td>
+                <span class="font-bold" id="ba-tidak-hadir">0 orang</span>, yaitu nomor:<br>
+                <span id="ba-list-absen" class="italic text-slate-700">-</span>
+              </td>
+            </tr>
+          </table>
+
+          <p class="mb-2">Adapun kelengkapan dokumen yang dilaporkan Pengawas Ruang berupa:</p>
+          <ol class="list-decimal pl-6 mb-4">
+            <li>Berita Acara Digital</li>
+            <li>Daftar Hadir Digital</li>
+          </ol>
+          <p class="mb-8">Demikian berita acara ini dibuat dengan sebenar-benarnya.</p>
+
+          <div class="flex justify-end">
+            <div class="w-64 text-left">
+              <p class="mb-16">Pengawas,</p>
+              <p class="font-bold underline" id="ba-pengawas-nama">(Nama Pengawas)</p>
+              <p id="ba-pengawas-nip">NIP. -</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 6. GENERATOR & UNDUH QR CODE PESERTA ==================== -->
+  <div id="view-qr-gen" class="hidden min-h-screen p-4 md:p-8 max-w-5xl mx-auto">
+    <div class="glass-card rounded-3xl p-6 md:p-8 animate-enter">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-800">Generator & Unduh QR Code Peserta</h2>
+          <p class="text-xs text-slate-500">Generate kartu QR otomatis dari Spreadsheet (Satuan atau Per Kelas/Ruang)</p>
+        </div>
+        <button onclick="navigateTo('view-dashboard')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 font-bold text-xs text-slate-700">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Menu Utama
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-6 items-end">
+        <div class="w-full sm:w-64">
+          <label class="block text-xs font-bold text-slate-600 mb-1">Filter Kelas / Kelompok</label>
+          <select id="qr-filter-kelas" onchange="renderQrCards()" class="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-white">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <button onclick="downloadAllQRPDF()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf"></i> Unduh Semua QR Terfilter (PDF)
+        </button>
+      </div>
+
+      <div id="qr-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Kartu QR dirender di sini -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MARQUEE TEXT BERJALAN ==================== -->
+  <div class="marquee-container">
+    <div class="marquee-text text-xs md:text-sm">
+      ★ Penilaian Sumatif Akhir Semester SMP Negeri 3 Blanakan Tahun Ajaran 2026/2027 ★ Jujur, Disiplin, dan Berprestasi ★
+    </div>
+  </div>
+
+  <script>
+    // STATE APLIKASI
+    let currentUser = null;
+    let currentSession = null;
+    let html5QrCode = null;
+    let isScanningPaused = false;
+    let allAbsensiData = [];
+    let allPesertaData = [];
+
+    // INISIALISASI AWAL
+    window.onload = function() {
+      populateRuangDropdowns();
+      
+      // Load Logo dari Spreadsheet
+      google.script.run.withSuccessHandler(cfg => {
+        if (cfg && cfg.LOGO_URL) {
+          document.getElementById('school-logo').src = cfg.LOGO_URL;
+          document.getElementById('dash-logo').src = cfg.LOGO_URL;
+        }
+      }).getAppConfig();
+
+      // Preload Data Peserta
+      google.script.run.withSuccessHandler(data => {
+        allPesertaData = data || [];
+        populateKelasFilter();
+      }).getAllPeserta();
+    };
+
+    function populateRuangDropdowns() {
+      const sel1 = document.getElementById('input-ruang');
+      const sel2 = document.getElementById('filter-ruang');
+      for (let i = 1; i <= 17; i++) {
+        const num = i < 10 ? '0' + i : i;
+        const val = `Ruang ${num}`;
+        sel1.innerHTML += `<option value="${val}">${val}</option>`;
+        sel2.innerHTML += `<option value="${val}">${val}</option>`;
+      }
+    }
+
+    function navigateTo(viewId) {
+      ['view-login', 'view-dashboard', 'view-form-ba', 'view-scanner', 'view-rekap', 'view-qr-gen'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(viewId).classList.remove('hidden');
+      if (viewId === 'view-qr-gen') renderQrCards();
+    }
+
+    // ==================== 1. LOGIKA LOGIN & ADMIN LOGO ====================
+    document.getElementById('form-login').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('login-username').value;
+      const pass = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+
+      google.script.run.withSuccessHandler(res => {
+        btn.disabled = false;
+        btn.innerHTML = '<span>MASUK APLIKASI</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>';
+
+        if (res.success) {
+          currentUser = res.user;
+          document.getElementById('user-greeting').innerText = `Halo, ${currentUser.nama}`;
+          document.getElementById('user-nip').innerText = `NIP. ${currentUser.nip} | ${currentUser.jabatan}`;
+          
+          // Cek Hak Akses Admin untuk Ubah Logo
+          if (currentUser.role === 'admin') {
+            document.getElementById('btn-admin-logo').classList.remove('hidden');
+          } else {
+            document.getElementById('btn-admin-logo').classList.add('hidden');
+          }
+
+          navigateTo('view-dashboard');
+        } else {
+          Swal.fire('Gagal Masuk', res.message, 'error');
+        }
+      }).loginUser(user, pass);
+    });
+
+    function openLogoModal() {
+      Swal.fire({
+        title: 'Ubah Logo Sekolah (Admin)',
+        input: 'url',
+        inputLabel: 'Masukkan URL Gambar Logo Baru',
+        inputPlaceholder: 'https://...',
+        showCancelButton: true,
+        confirmButtonText: 'Simpan Logo',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          google.script.run.withSuccessHandler(res => {
+            document.getElementById('school-logo').src = result.value;
+            document.getElementById('dash-logo').src = result.value;
+            Swal.fire('Berhasil', res.message, 'success');
+          }).updateLogoUrl(result.value);
+        }
+      });
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('form-login').reset();
+      navigateTo('view-login');
+    }
+
+    // ==================== 2. FORM SESI & SCANNER QR ====================
+    document.getElementById('form-sesi').addEventListener('submit', function(e) {
+      e.preventDefault();
+      currentSession = {
+        ruang: document.getElementById('input-ruang').value,
+        tanggal: document.getElementById('input-tanggal').value,
+        jamMulai: document.getElementById('input-jam-mulai').value,
+        jamSelesai: document.getElementById('input-jam-selesai').value,
+        mapel: document.getElementById('input-mapel').value
+      };
+
+      document.getElementById('badge-sesi').innerText = `${currentSession.ruang} | ${currentSession.mapel}`;
+      navigateTo('view-scanner');
+      startQrScanner();
+    });
+
+    function startQrScanner() {
+      document.getElementById('scanner-box').classList.remove('hidden');
+      document.getElementById('scan-result-card').classList.add('hidden');
+      document.getElementById('scanner-footer-btn').classList.remove('hidden');
+      isScanningPaused = false;
+
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 240, height: 240 } },
+        onScanSuccess,
+        (err) => {} // abaikan error frame kosong
+      ).catch(err => {
+        Swal.fire('Akses Kamera Ditolak', 'Pastikan izin kamera aktif pada browser HP Anda.', 'warning');
+      });
+    }
+
+    function onScanSuccess(decodedText) {
+      if (isScanningPaused) return;
+      isScanningPaused = true;
+
+      // Format QR Code: JSON atau pemisah "|" -> noPeserta|nama|nis|nisn|kelas|ruang
+      let pesertaObj = null;
+      try {
+        pesertaObj = JSON.parse(decodedText);
+      } catch (e) {
+        const parts = decodedText.split('|');
+        if (parts.length >= 6) {
+          pesertaObj = {
+            noPeserta: parts[0].trim(),
+            nama: parts[1].trim(),
+            nis: parts[2].trim(),
+            nisn: parts[3].trim(),
+            kelas: parts[4].trim(),
+            ruang: parts[5].trim()
+          };
+        }
+      }
+
+      if (!pesertaObj || !pesertaObj.noPeserta) {
+        Swal.fire('QR Tidak Valid', 'Format QR Code tidak dikenali sistem.', 'error').then(() => {
+          isScanningPaused = false;
+        });
+        return;
+      }
+
+      // Pause kamera sementara proses simpan
+      html5QrCode.pause();
+      Swal.fire({ title: 'Mencatat Kehadiran...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const payload = {
+        tanggal: currentSession.tanggal,
+        jamMulai: currentSession.jamMulai,
+        jamSelesai: currentSession.jamSelesai,
+        mapel: currentSession.mapel,
+        ruangUjian: currentSession.ruang,
+        noPeserta: pesertaObj.noPeserta,
+        nama: pesertaObj.nama,
+        nis: pesertaObj.nis,
+        nisn: pesertaObj.nisn,
+        kelas: pesertaObj.kelas,
+        ruangAsal: pesertaObj.ruang,
+        pengawasNama: currentUser.nama,
+        pengawasNip: currentUser.nip
+      };
+
+      google.script.run.withSuccessHandler(res => {
+        Swal.close();
+        if (res.success) {
+          // Tampilkan Kartu Hasil Pindai
+          document.getElementById('scanner-box').classList.add('hidden');
+          document.getElementById('scanner-footer-btn').classList.add('hidden');
+          document.getElementById('scan-result-card').classList.remove('hidden');
+
+          document.getElementById('res-waktu').innerText = `Tercatat pada: ${res.timestamp}`;
+          document.getElementById('res-nopes').innerText = pesertaObj.noPeserta;
+          document.getElementById('res-nama').innerText = pesertaObj.nama;
+          document.getElementById('res-nis').innerText = `${pesertaObj.nis} / ${pesertaObj.nisn}`;
+          document.getElementById('res-kelas').innerText = pesertaObj.kelas;
+          document.getElementById('res-ruang').innerText = pesertaObj.ruang;
+        } else {
+          // Cegah scan ganda
+          Swal.fire('Peringatan Scan Ganda', res.message, 'warning').then(() => {
+            html5QrCode.resume();
+            isScanningPaused = false;
+          });
+        }
+      }).recordAttendance(payload);
+    }
+
+    function resumeScanner() {
+      document.getElementById('scan-result-card').classList.add('hidden');
+      document.getElementById('scanner-box').classList.remove('hidden');
+      document.getElementById('scanner-footer-btn').classList.remove('hidden');
+      html5QrCode.resume();
+      isScanningPaused = false;
+    }
+
+    function stopAndGoHome() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => {
+          navigateTo('view-dashboard');
+        }).catch(() => navigateTo('view-dashboard'));
+      } else {
+        navigateTo('view-dashboard');
+      }
+    }
+
+    // ==================== 3. REKAP & BERITA ACARA OTOMATIS ====================
+    function openRekapMenu() {
+      navigateTo('view-rekap');
+      Swal.fire({ title: 'Memuat Data Rekap...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      google.script.run.withSuccessHandler(res => {
+        Swal.close();
+        allAbsensiData = res.absensi || [];
+        allPesertaData = res.peserta || [];
+        applyFilters();
+      }).getRekapData();
+    }
+
+    function switchRekapTab(tab) {
+      if (tab === 'kehadiran') {
+        document.getElementById('content-tab-kehadiran').classList.remove('hidden');
+        document.getElementById('content-tab-ba').classList.add('hidden');
+        document.getElementById('tab-btn-kehadiran').className = 'flex-1 py-2.5 rounded-xl font-bold text-sm bg-indigo-600 text-white shadow transition';
+        document.getElementById('tab-btn-ba').className = 'flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:text-slate-900 transition';
+      } else {
+        document.getElementById('content-tab-kehadiran').classList.add('hidden');
+        document.getElementById('content-tab-ba').classList.remove('hidden');
+        document.getElementById('tab-btn-ba').className = 'flex-1 py-2.5 rounded-xl font-bold text-sm bg-indigo-600 text-white shadow transition';
+        document.getElementById('tab-btn-kehadiran').className = 'flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:text-slate-900 transition';
+      }
+    }
+
+    function applyFilters() {
+      const fMapel = document.getElementById('filter-mapel').value;
+      const fTanggal = document.getElementById('filter-tanggal').value;
+      const fRuang = document.getElementById('filter-ruang').value;
+      const fNama = document.getElementById('filter-nama').value.toLowerCase();
+
+      const filtered = allAbsensiData.filter(item => {
+        return (!fMapel || item.mapel === fMapel) &&
+               (!fTanggal || item.tanggal === fTanggal) &&
+               (!fRuang || item.ruangUjian === fRuang) &&
+               (!fNama || item.nama.toLowerCase().includes(fNama));
+      });
+
+      // Render Tabel Kehadiran
+      document.getElementById('count-rekap').innerText = `Menampilkan ${filtered.length} peserta hadir`;
+      const tbody = document.getElementById('tbody-rekap');
+      tbody.innerHTML = filtered.map((row, idx) => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-semibold">${idx + 1}</td>
+          <td class="p-3 text-slate-500">${row.timestamp}</td>
+          <td class="p-3 font-bold text-indigo-700">${row.noPeserta}</td>
+          <td class="p-3 font-semibold">${row.nama}</td>
+          <td class="p-3">${row.kelas}</td>
+          <td class="p-3">${row.ruangUjian}</td>
+          <td class="p-3">${row.mapel}</td>
+        </tr>
+      `).join('');
+
+      // Generate Otomatis Redaksi Berita Acara
+      generateBeritaAcaraText(filtered, fMapel, fTanggal, fRuang);
+    }
+
+    function generateBeritaAcaraText(filteredAbsensi, mapel, tanggal, ruang) {
+      const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+      let hariStr = '................';
+      let tglAngka = '....';
+      let bulanStr = '................';
+
+      if (tanggal) {
+        const d = new Date(tanggal + 'T00:00:00');
+        hariStr = namaHari[d.getDay()];
+        tglAngka = d.getDate();
+        bulanStr = namaBulan[d.getMonth()];
+      }
+
+      const sample = filteredAbsensi[0] || {};
+      const jamMulai = sample.jamMulai || '........';
+      const jamSelesai = sample.jamSelesai || '........';
+      const mapelText = mapel || sample.mapel || '........................................';
+      const ruangText = ruang || sample.ruangUjian || '-';
+
+      // Hitung Hadir & Tidak Hadir berdasarkan Master Peserta di Ruang tsb
+      const pesertaDiRuang = ruang ? allPesertaData.filter(p => p.ruang === ruang) : [];
+      const hadirNoPesertaSet = new Set(filteredAbsensi.map(a => a.noPeserta));
+      
+      const jmlHadir = filteredAbsensi.length;
+      const tidakHadirList = pesertaDiRuang.filter(p => !hadirNoPesertaSet.has(p.noPeserta));
+      const jmlTidakHadir = ruang ? tidakHadirList.length : 0;
+      const nomorTidakHadirStr = tidakHadirList.length > 0 
+        ? tidakHadirList.map(p => `${p.noPeserta} (${p.nama})`).join(', ') 
+        : 'Nihil';
+
+      const pengawasNama = sample.pengawasNama || (currentUser ? currentUser.nama : '-');
+      const pengawasNip = sample.pengawasNip || (currentUser ? currentUser.nip : '-');
+
+      document.getElementById('ba-paragraf-pembuka').innerHTML = `
+        Pada hari ini <b>${hariStr}</b> tanggal <b>${tglAngka}</b> bulan <b>${bulanStr}</b> Tahun Dua Ribu Dua Puluh Enam, Pukul <b>${jamMulai}</b> s.d. <b>${jamSelesai}</b> bertempat di SMP Negeri 3 Blanakan, telah dilaksanakan Kegiatan Penilaian Sumatif Akhir Semester Tahun Ajaran 2026/2027 Mata Pelajaran <b>${mapelText}</b>, dengan rincian sebagai berikut:
+      `;
+
+      document.getElementById('ba-ruang').innerText = ruangText;
+      document.getElementById('ba-hadir').innerText = `${jmlHadir} orang`;
+      document.getElementById('ba-tidak-hadir').innerText = `${jmlTidakHadir} orang`;
+      document.getElementById('ba-list-absen').innerText = nomorTidakHadirStr;
+      document.getElementById('ba-pengawas-nama').innerText = pengawasNama;
+      document.getElementById('ba-pengawas-nip').innerText = `NIP. ${pengawasNip}`;
+    }
+
+    // EKSPOR PDF DAFTAR HADIR
+    function exportKehadiranPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("DAFTAR HADIR PESERTA PENILAIAN SUMATIF AKHIR SEMESTER", 105, 15, { align: "center" });
+      doc.text("SMP NEGERI 3 BLANAKAN - TAHUN AJARAN 2026/2027", 105, 22, { align: "center" });
+
+      const rows = [];
+      document.querySelectorAll("#tbody-rekap tr").forEach(tr => {
+        const cols = Array.from(tr.querySelectorAll("td")).map(td => td.innerText);
+        rows.push(cols);
+      });
+
+      doc.autoTable({
+        startY: 30,
+        head: [['No', 'Waktu Scan', 'No. Peserta', 'Nama Peserta', 'Kelas', 'Ruang', 'Mata Pelajaran']],
+        body: rows,
+        styles: { fontSize: 8 }
+      });
+
+      doc.save(`Daftar_Hadir_PSAS_SMPN3_Blanakan.pdf`);
+    }
+
+    // EKSPOR PDF BERITA ACARA
+    function exportBeritaAcaraPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(13);
+      doc.text("BERITA ACARA", 105, 20, { align: "center" });
+      doc.text("PELAKSANAAN PENILAIAN SUMATIF AKHIR SEMESTER", 105, 26, { align: "center" });
+      doc.text("SMP NEGERI 3 BLANAKAN", 105, 32, { align: "center" });
+      doc.text("TAHUN AJARAN 2026/2027", 105, 38, { align: "center" });
+      doc.setLineWidth(0.5);
+      doc.line(20, 42, 190, 42);
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      const paragraf = document.getElementById('ba-paragraf-pembuka').innerText.trim();
+      const splitParagraf = doc.splitTextToSize(paragraf, 170);
+      doc.text(splitParagraf, 20, 50);
+
+      let y = 50 + (splitParagraf.length * 6) + 4;
+      doc.text(`Ruang                                     : ${document.getElementById('ba-ruang').innerText}`, 20, y); y += 7;
+      doc.text(`Jumlah Peserta Yang hadir   : ${document.getElementById('ba-hadir').innerText}`, 20, y); y += 7;
+      doc.text(`Peserta Yang Tidak Hadir    : ${document.getElementById('ba-tidak-hadir').innerText}, yaitu nomor:`, 20, y); y += 6;
+      
+      const absenStr = document.getElementById('ba-list-absen').innerText;
+      const splitAbsen = doc.splitTextToSize(absenStr, 160);
+      doc.text(splitAbsen, 25, y);
+      y += (splitAbsen.length * 6) + 6;
+
+      doc.text("Adapun kelengkapan dokumen yang dilaporkan Pengawas Ruang berupa:", 20, y); y += 6;
+      doc.text("1. Berita Acara Digital", 25, y); y += 6;
+      doc.text("2. Daftar Hadir Digital", 25, y); y += 8;
+      doc.text("Demikian berita acara ini dibuat dengan sebenar-benarnya.", 20, y); y += 16;
+
+      doc.text("Pengawas,", 130, y); y += 22;
+      doc.setFont("times", "bold");
+      doc.text(document.getElementById('ba-pengawas-nama').innerText, 130, y); y += 6;
+      doc.setFont("times", "normal");
+      doc.text(document.getElementById('ba-pengawas-nip').innerText, 130, y);
+
+      doc.save(`Berita_Acara_PSAS_${document.getElementById('ba-ruang').innerText}.pdf`);
+    }
+
+    // ==================== 4. GENERATOR QR CODE PESERTA ====================
+    function populateKelasFilter() {
+      const kelasSet = new Set(allPesertaData.map(p => p.kelas));
+      const sel = document.getElementById('qr-filter-kelas');
+      sel.innerHTML = '<option value="">Semua Kelas</option>';
+      kelasSet.forEach(k => {
+        if (k) sel.innerHTML += `<option value="${k}">${k}</option>`;
+      });
+    }
+
+    function renderQrCards() {
+      const fKelas = document.getElementById('qr-filter-kelas').value;
+      const list = fKelas ? allPesertaData.filter(p => p.kelas === fKelas) : allPesertaData;
+      const container = document.getElementById('qr-grid-container');
+      container.innerHTML = '';
+
+      list.forEach((p, idx) => {
+        const cardId = `qr-canvas-${idx}`;
+        const qrPayload = JSON.stringify({
+          noPeserta: p.noPeserta,
+          nama: p.nama,
+          nis: p.nis,
+          nisn: p.nisn,
+          kelas: p.kelas,
+          ruang: p.ruang
+        });
+
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-slate-200 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm';
+        card.innerHTML = `
+          <div class="text-[10px] font-extrabold text-indigo-600 uppercase mb-1">SMP Negeri 3 Blanakan</div>
+          <div id="${cardId}" class="my-2 p-2 bg-white border rounded-xl"></div>
+          <div class="font-bold text-slate-800 text-sm">${p.nama}</div>
+          <div class="text-xs text-slate-500">No: ${p.noPeserta} | Kelas: ${p.kelas}</div>
+          <div class="text-xs font-semibold text-indigo-700 mb-3">${p.ruang}</div>
+          <button onclick="downloadSingleQR('${cardId}', '${p.noPeserta}_${p.nama}')" class="w-full py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs transition">
+            <i class="fa-solid fa-download mr-1"></i> Unduh QR Satuan
+          </button>
+        `;
+        container.appendChild(card);
+
+        new QRCode(document.getElementById(cardId), {
+          text: qrPayload,
+          width: 130,
+          height: 130
+        });
+      });
+    }
+
+    function downloadSingleQR(containerId, filename) {
+      const canvas = document.querySelector(`#${containerId} canvas`);
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `QR_${filename}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function downloadAllQRPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const cards = document.querySelectorAll('#qr-grid-container > div');
+      
+      let x = 15, y = 20, count = 0;
+      cards.forEach((card) => {
+        const canvas = card.querySelector('canvas');
+        const nama = card.querySelectorAll('div')[2].innerText;
+        const info = card.querySelectorAll('div')[3].innerText;
+        const ruang = card.querySelectorAll('div')[4].innerText;
+
+        if (canvas) {
+          doc.rect(x - 3, y - 5, 58, 65);
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "bold");
+          doc.text("KARTU PESERTA PSAS", x + 26, y, { align: "center" });
+          doc.setFontSize(7);
+          doc.setFont("helvetica", "bold");
+          doc.text("TAHUN AJARAN 2026/2027", x + 26, y + 3, { align: "center" });
+          doc.addImage(canvas.toDataURL('image/png'), 'PNG', x + 14, y + 8, 24, 24);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          let splitNama = doc.splitTextToSize(nama, 54); 
+          doc.text(splitNama, x + 26, y + 38, { align: "center" });
+          doc.setFont("helvetica", "normal");
+          doc.text(info, x + 26, y + 46, { align: "center" });
+          doc.text(ruang, x + 26, y + 50, { align: "center" });
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.text("SMP NEGERI 3 BLANAKAN", x + 26, y + 56, { align: "center" });
+
+          x += 62;
+          count++;
+          if (count % 3 === 0) {
+            x = 15;
+            y += 70;
+          }
+          if (y > 240) {
+            doc.addPage();
+            x = 15;
+            y = 20;
+          }
+        }
+      });
+
+      doc.save('Kartu_QR_Peserta_PSAS.pdf');
+    }
+  </script>
+</body>
+</html>
